@@ -1,4 +1,5 @@
 import numpy as np
+import ipdb
 
 from scipy.optimize import leastsq
 
@@ -48,6 +49,9 @@ class EDGE:
                 or len(contours[i]) <= min_points
             ):
                 continue
+
+            if contours[i][0][0] != contours[i][-1][0] or contours[i][0][1] != contours[i][-1][1]:
+                contours[i] = np.append(contours[i], [contours[i][0]], 0)
 
             # All variables are self-explaining except the radius_deviation
             # and the connectivity.
