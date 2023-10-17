@@ -43,6 +43,8 @@ class Streak:
         An empirical radius deviation cut.
     connectivity_angle: float, optional
         An maximum angle to connect each separated edge.
+    distance_threshold: float, optional
+        An maximum distance between start and end points of the contour.
     fully_connected: str, optional
         See skimage.measure.find_contours for details.
     output_path: str, optional
@@ -51,7 +53,7 @@ class Streak:
     """
     def __init__(self, filename, remove_bkg='constant', bkg_box_size=50,
                  contour_threshold=3., min_points=10, shape_cut=0.2,
-                 area_cut=20., radius_dev_cut=0.5, connectivity_angle=3.,
+                 area_cut=20., radius_dev_cut=0.5, connectivity_angle=3., distance_threshold=10.,
                  fully_connected='high', output_path=None):
         hdulist = fits.open(filename)
         raw_image = hdulist[0].data.astype(np.float64)
@@ -99,6 +101,7 @@ class Streak:
         self.radius_dev_cut = radius_dev_cut
         self.connectivity_angle = connectivity_angle
         self.fully_connected = fully_connected
+        self.distance_threshold = distance_threshold
 
         # Set output path.
         if output_path is None:
@@ -152,7 +155,8 @@ class Streak:
         edge = EDGE(contours, min_points=self.min_points,
                     shape_cut=self.shape_cut, area_cut=self.area_cut,
                     radius_dev_cut=self.radius_dev_cut,
-                    connectivity_angle=self.connectivity_angle)
+                    connectivity_angle=self.connectivity_angle,
+                    distance_threshold=self.distance_threshold)
         edge.quantify()
         self.raw_borders = edge.get_edges()
 

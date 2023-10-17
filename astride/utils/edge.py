@@ -21,9 +21,11 @@ class EDGE:
         An empirical radius deviation cut.
     connectivity_angle: float, optional
         An maximum angle to connect each separated edge.
+    distance_threshold: float, optional
+        An maximum distance between start and end points of the contour.
     """
     def __init__(self, contours, min_points=10, shape_cut=0.2,
-                 area_cut=10., radius_dev_cut=0.5, connectivity_angle=3.):
+                 area_cut=10., radius_dev_cut=0.5, connectivity_angle=3., distance_threshold=10):
         # Set global values.
         self.shape_cut = shape_cut
         self.area_cut = area_cut
@@ -33,10 +35,18 @@ class EDGE:
         # Set structure.
         self.edges = []
         for i in range(len(contours)):
-            # Remove unclosed contours.
-            if contours[i][0][0] != contours[i][-1][0] or \
-               contours[i][0][1] != contours[i][-1][1] or \
-               len(contours[i]) <= min_points:
+            # Remove unclosed contours. The original method is prone to be affected by boundary of the image
+            # if contours[i][0][0] != contours[i][-1][0] or \
+            #    contours[i][0][1] != contours[i][-1][1] or \
+            #    len(contours[i]) <= min_points:
+            #     continue
+
+            # New method that fixes the problem
+            if (
+                np.abs(contours[i][0][0] - contours[i][-1][0]) > distance_threshold
+                or np.abs(contours[i][0][1] - contours[i][-1][1]) > distance_threshold
+                or len(contours[i]) <= min_points
+            ):
                 continue
 
             # All variables are self-explaining except the radius_deviation
